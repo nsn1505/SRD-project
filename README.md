@@ -251,3 +251,5 @@ The report and documentation were prepared from the submitted notebook's code an
 The report contains the full reference list. Core sources include [DIV2K](https://data.vision.ee.ethz.ch/cvl/DIV2K/), [SRCNN](https://arxiv.org/abs/1501.00092), [residual learning](https://arxiv.org/abs/1512.03385), and [Real-ESRGAN](https://arxiv.org/abs/2107.10833).
 
 Complete the group/project identifiers and the report's member contribution table before submission. The supplied naming convention is `GroupID_ProjectID_Report.pdf` for the report and `DL2026-GroupID-ProjectID` for the repository. Personal details and contribution claims have deliberately been left for the group to complete.
+   
+ 
