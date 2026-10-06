@@ -40,7 +40,7 @@ See [DATA.md](DATA.md) for version 1, source notices, acquisition options and ex
 
 | Setting | Recorded value |
 | --- | --- |
-| Framework | TensorFlow 2.20.0 / `tf.keras` |
+| Framework | TensorFlow 2.21.0 / `tf.keras` |
 | Runtime | Google Colab; GPU detected; notebook metadata identifies T4 |
 | Seed | 42 for Python, NumPy and TensorFlow |
 | Scale | x2 |
@@ -48,7 +48,7 @@ See [DATA.md](DATA.md) for version 1, source notices, acquisition options and ex
 | Training / validation patches | 4,800 / 800 |
 | HR patch / LR patch | 96 x 96 / 48 x 48 |
 | Test HR crop | Central 256 x 256 crop |
-| Batch size / epochs per model | 16 / 10 |
+| Batch size / epochs per model | 16 / 20 |
 | Optimizer / learning rate | Adam / 0.0001 |
 | Loss / checkpoint selection | MSE / minimum validation loss |
 
@@ -68,10 +68,10 @@ print(tf.__version__)
 print(tf.config.list_physical_devices("GPU"))
 ```
 
-The recorded version is 2.20.0. If TensorFlow or the other packages are absent, or you need that TensorFlow version, install:
+The recorded version is 2.21.0. If TensorFlow or the other packages are absent, or you need that TensorFlow version, install:
 
 ```python
-%pip install "tensorflow==2.20.0" numpy pandas matplotlib pillow h5py
+%pip install "tensorflow==2.21.0" numpy pandas matplotlib pillow h5py
 ```
 
 Restart the runtime after changing TensorFlow, then execute from the beginning. Do not reinstall packages during a running training job. The exact versions of Python and the remaining dependencies were not saved in the original run; this installation line is a compatible starting specification, not a recovered lockfile.
@@ -121,9 +121,9 @@ Cell numbers below refer to the **original notebook**, counting its first Drive 
 | 16-17 | Plot comparisons and show a qualitative test example |
 | 18 | Optional interactive upload demo |
 
-For reproduction, keep the original settings: `N_TRAIN_IMAGES=300`, `N_VAL_IMAGES=50`, `N_TEST_IMAGES=50`, `PATCHES_PER_IMAGE=16`, `EPOCHS=10`, `SCALE=2`, and `SEED=42`. Changing them creates a new experiment and requires updating the report's results.
+For reproduction, keep the original settings: `N_TRAIN_IMAGES=300`, `N_VAL_IMAGES=50`, `N_TEST_IMAGES=50`, `PATCHES_PER_IMAGE=16`, `EPOCHS=20`, `SCALE=2`, and `SEED=42`. Changing them creates a new experiment and requires updating the report's results.
 
-Recorded training times were approximately 1.4 minutes for A, 10.6 for B and 11.0 for C, plus 95 seconds for HR preparation. These are observations from the uploaded notebook, not a runtime guarantee, and exclude some setup/evaluation work.
+Recorded training times were approximately 2.9 minutes for A, 16.3 for B and 18.8 for C, plus 93 seconds for HR preparation. These are observations from the uploaded notebook, not a runtime guarantee, and exclude some setup/evaluation work.
 
 ## Recorded results
 
@@ -133,23 +133,23 @@ Values below are copied from the notebook's saved tables. PSNR is shown to two d
 
 | Condition | Bicubic | A: SRCNN | B: Residual clean | C: Residual random |
 | --- | ---: | ---: | ---: | ---: |
-| Clean | 29.75 | 31.37 | **32.21** | 30.47 |
-| Blur, sigma 1.5 | 26.30 | 26.73 | 26.73 | **27.17** |
-| Noise, sigma 10/255 | 26.16 | 25.62 | 25.36 | **28.55** |
-| JPEG, quality 30 | 25.75 | 25.62 | 25.57 | **26.10** |
-| Blur + noise + JPEG | 25.62 | 25.74 | 25.70 | **26.34** |
+| Clean | 29.75 | 31.55 | **32.44** | 30.68 |
+| Blur, sigma 1.5 | 26.30 | 26.76 | 26.69 | **27.55** |
+| Noise, sigma 10/255 | 26.16 | 25.51 | 25.30 | **28.76** |
+| JPEG, quality 30 | 25.75 | 25.65 | 25.59 | **26.07** |
+| Blur + noise + JPEG | 25.62 | 25.77 | 25.67 | **26.34** |
 
 ### SSIM
 
 | Condition | Bicubic | A: SRCNN | B: Residual clean | C: Residual random |
 | --- | ---: | ---: | ---: | ---: |
-| Clean | 0.8651 | 0.8976 | **0.9098** | 0.8669 |
-| Blur | 0.7394 | 0.7602 | **0.7611** | 0.7564 |
-| Noise | 0.6633 | 0.6234 | 0.6040 | **0.8082** |
-| JPEG | 0.7114 | 0.7034 | 0.7028 | **0.7358** |
-| Blur + noise + JPEG | 0.7005 | 0.7008 | 0.6997 | **0.7317** |
+| Clean | 0.8651 | 0.8997 | **0.9120** | 0.8762 |
+| Blur | 0.7394 | 0.7608 | 0.7593 | **0.7747** |
+| Noise | 0.6633 | 0.6147 | 0.5966 | **0.8162** |
+| JPEG | 0.7114 | 0.7045 | 0.7033 | **0.7335** |
+| Blur + noise + JPEG | 0.7005 | 0.7016 | 0.6987 | **0.7320** |
 
-C improves noise-condition PSNR by 2.39 dB over bicubic and 3.19 dB over B. It loses 1.74 dB to B on clean inputs. C leads PSNR in all four degraded conditions, but B has higher SSIM in the blur-only condition. These differences are calculated from the rounded displayed tables.
+C improves noise-condition PSNR by 2.60 dB over bicubic and 3.46 dB over B. It loses 1.76 dB to B on clean inputs. C leads both PSNR and SSIM in all four degraded conditions; B leads both metrics on clean inputs only. Under noise and JPEG, A and B score below the bicubic baseline on both metrics, so the clean-trained networks are worse than applying no learned model at all. These differences are calculated from the rounded displayed tables.
 
 Metrics use RGB float images in [0,1], prediction clipping, TensorFlow PSNR/SSIM with `max_val=1.0`, and a mean over 50 test crops. There is no explicit border-shaving step or luminance-only conversion. Do not directly compare these numbers with published full-image, Y-channel or border-cropped benchmark results.
 

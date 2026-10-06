@@ -122,7 +122,7 @@ This reproduces file selection given the same sorted paths and Python shuffle be
 
 Patch locations are sampled once when cell 4 runs, not resampled every epoch. Online flips and random degradations can change on later passes. Patches may overlap within the same image. The original run assumes images are large enough for these crops; it does not implement small-image padding.
 
-The three HR arrays occupy approximately 659 MB decimal (628 MiB) before TensorFlow datasets, cached test inputs, activations and other overhead. This is not a peak-RAM measurement. The recorded data preparation time was 95 seconds for the submitted run.
+The three HR arrays occupy approximately 659 MB decimal (628 MiB) before TensorFlow datasets, cached test inputs, activations and other overhead. This is not a peak-RAM measurement. The recorded data preparation time was 93 seconds for the submitted run.
 
 ## 6. LR synthesis
 
